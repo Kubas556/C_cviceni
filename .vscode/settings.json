@@ -1,3 +1,3 @@
 {
-    "c-cpp-compile-run.c-flags": "-std=c99 -Wall -Wextra"
+    "c-cpp-compile-run.c-flags": "-std=c99 -Wall -Wextra -Werror"
 }
