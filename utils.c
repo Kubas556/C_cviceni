@@ -1,5 +1,17 @@
 #define CONSOlE_DELIMETER "----------------\n"
 
+int VUniversu(UniversumT universum, char *value)
+{
+    for (int i = 0; universum.values[i] != NULL; i++)
+    {
+        //printf("%s\n", universum.values[i]);
+        //printf("%s", value);
+        if (!strcmp(universum.values[i], value))
+            return 1;
+    }
+    return 0;
+}
+
 void vypisMnozinu(MnozinaT *t)
 {
     printf(CONSOlE_DELIMETER);

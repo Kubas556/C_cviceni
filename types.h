@@ -1,5 +1,5 @@
-#define MAX_PARAMETERS 4
-#define MAX_ARG_LENGTH 4
+#define MAX_PARAMETERS 10
+#define MAX_ARG_LENGTH 10
 #define MAX_STRING_LENGTH 7
 #define UNIVERSUM_CHAR 'U'
 #define MNOZINA_CHAR 'S'

@@ -5,8 +5,9 @@
 #include "utils.c"
 #define DEBUG
 
-static UniversumT universum = {NULL, {NULL}};
-static MnozinaT mnoziny[] = {NULL};
+static UniversumT universum = {0};
+static int pocetMnozin = 0;
+static MnozinaT mnoziny[] = {0};
 
 int main(/*int argc, char **argv*/)
 {
@@ -78,7 +79,7 @@ int main(/*int argc, char **argv*/)
             case UNIVERSUM_CHAR:
                 if (universum.values[0] == NULL)
                 {
-                    for (int i = 0; i < wordIndex; i++)
+                    for (int i = 1; i < wordIndex; i++)
                     {
                         char *wordCopy = (char *)malloc(sizeof(char) * MAX_STRING_LENGTH);
                         for (int j = 0; 1; j++)
@@ -94,17 +95,44 @@ int main(/*int argc, char **argv*/)
                         //char arr[20];
                         //arr[0] = ' ';
                         //printf("%s\n", wordCopy);
-                        universum.values[i] = wordCopy;
 
-                        if (i + 1 < MAX_PARAMETERS)
-                            universum.values[i + 1] = NULL;
+                        universum.values[i - 1] = wordCopy;
+
+                        if (i < MAX_PARAMETERS)
+                            universum.values[i] = NULL;
                         //printf("%s\n", wordCopy);
                     }
                 }
 
                 break;
             case MNOZINA_CHAR:
-                printf("mnozina deklarace\n");
+                for (int i = 1; i < wordIndex; i++)
+                {
+                    char *wordCopy = (char *)malloc(sizeof(char) * MAX_STRING_LENGTH);
+                    for (int j = 0; 1; j++)
+                    {
+                        wordCopy[j] = words[i][j];
+
+                        if (words[i][j] == '\0')
+                            break;
+                    }
+
+                    if (!VUniversu(universum, wordCopy))
+                    {
+                        Error("Word not in universe");
+                        printf("Line %i", lineIndex);
+                        exit(0);
+                    }
+
+                    mnoziny[pocetMnozin].index = lineIndex;
+                    mnoziny[pocetMnozin].values[i - 1] = wordCopy;
+
+                    if (i < MAX_PARAMETERS)
+                        mnoziny[pocetMnozin].values[i] = NULL;
+                }
+
+                pocetMnozin++;
+
                 break;
             case RELACE_CHAR:
 
@@ -130,6 +158,8 @@ int main(/*int argc, char **argv*/)
         }
     }
     vypisUniversum(&universum);
+    vypisMnozinu(&mnoziny[0]);
+    vypisMnozinu(&mnoziny[1]);
     //printf("last value %s\n", universum.values[2]);
     fclose(fp);
     printf("konec\n");
