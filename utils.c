@@ -44,3 +44,35 @@ void vypisUniversum(UniversumT *t)
     printf("\n");
     printf(CONSOlE_DELIMETER);
 };
+
+void vypisRelace(RelaceT *t)
+{
+    printf(CONSOlE_DELIMETER);
+    printf("Hodnoty relace: \n");
+    for (int i = 0; i < (int)(sizeof t->values / sizeof t->values[0]); i++)
+    {
+        if (t->values[i])
+        {
+            for (int j = 0; j < (int)(sizeof t->values[i] / sizeof t->values[i][0]); j++)
+            {
+                if (t->values[i][j])
+                {
+                    if (j == 0)
+                        printf("(");
+
+                    printf("%s", t->values[i][j]);
+
+                    if (j == 0)
+                        printf(" ");
+
+                    if (j == 1)
+                        printf(") ");
+                }
+            }
+        }
+        else
+            break;
+    }
+    printf("\n");
+    printf(CONSOlE_DELIMETER);
+};

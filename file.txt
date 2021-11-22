@@ -1,4 +1,6 @@
 U Apple Banana Peach Ananas
 S Peach Banana
-S Apple Ananas
-C ss s
+S
+S Banana Apple
+R (Peach Apple) (Apple Ananas)
+C empty 1

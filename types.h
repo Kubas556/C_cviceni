@@ -1,6 +1,6 @@
 #define MAX_PARAMETERS 10
 #define MAX_ARG_LENGTH 10
-#define MAX_STRING_LENGTH 7
+#define MAX_STRING_LENGTH 20
 #define UNIVERSUM_CHAR 'U'
 #define MNOZINA_CHAR 'S'
 #define RELACE_CHAR 'R'
@@ -21,6 +21,7 @@ struct Mnozina
 
 struct Relace
 {
+    int index;
     char *values[MAX_PARAMETERS][2];
 };
 
@@ -29,3 +30,7 @@ typedef struct Mnozina MnozinaT;
 typedef struct Universum UniversumT;
 
 typedef struct Relace RelaceT;
+
+//------------------------------------------------functions for mnoziny------------------------------------------------
+int mnEmpty(int line);
+//------------------------------------------------functions for relace-------------------------------------------------

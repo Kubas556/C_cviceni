@@ -3,19 +3,21 @@
 #include <string.h>
 #include "types.h"
 #include "utils.c"
-#define DEBUG
+//#define DEBUG
 
 static UniversumT universum = {0};
 static int pocetMnozin = 0;
-static MnozinaT mnoziny[] = {0};
+static MnozinaT mnoziny[MAX_PARAMETERS] = {0};
+static int pocetRelaci = 0;
+static RelaceT relace[MAX_PARAMETERS] = {0};
 
-int main(/*int argc, char **argv*/)
+int main(int argc, char **argv)
 {
     char file[MAX_ARG_LENGTH];
 #ifndef DEBUG
     if (argc < 2)
     {
-        puts("missing argument");
+        Error("missing argument");
         exit(0);
     }
 
@@ -77,31 +79,36 @@ int main(/*int argc, char **argv*/)
             switch (lineActionIdentifier)
             {
             case UNIVERSUM_CHAR:
-                if (universum.values[0] == NULL)
+
+                if (universum.values[0] != NULL)
                 {
-                    for (int i = 1; i < wordIndex; i++)
+                    Error("Universum already declared");
+                    printf("Line %i\n", lineIndex);
+                    exit(0);
+                }
+
+                for (int i = 1; i < wordIndex; i++)
+                {
+                    char *wordCopy = (char *)malloc(sizeof(char) * MAX_STRING_LENGTH);
+                    for (int j = 0; 1; j++)
                     {
-                        char *wordCopy = (char *)malloc(sizeof(char) * MAX_STRING_LENGTH);
-                        for (int j = 0; 1; j++)
-                        {
-                            //char *charCopy = (char *)malloc(sizeof(char));
+                        //char *charCopy = (char *)malloc(sizeof(char));
 
-                            //*charCopy = words[i][j];
-                            wordCopy[j] = /**charCopy*/ words[i][j];
+                        //*charCopy = words[i][j];
+                        wordCopy[j] = /**charCopy*/ words[i][j];
 
-                            if (words[i][j] == '\0')
-                                break;
-                        }
-                        //char arr[20];
-                        //arr[0] = ' ';
-                        //printf("%s\n", wordCopy);
-
-                        universum.values[i - 1] = wordCopy;
-
-                        if (i < MAX_PARAMETERS)
-                            universum.values[i] = NULL;
-                        //printf("%s\n", wordCopy);
+                        if (words[i][j] == '\0')
+                            break;
                     }
+                    //char arr[20];
+                    //arr[0] = ' ';
+                    //printf("%s\n", wordCopy);
+
+                    universum.values[i - 1] = wordCopy;
+
+                    if (i < MAX_PARAMETERS)
+                        universum.values[i] = NULL;
+                    //printf("%s\n", wordCopy);
                 }
 
                 break;
@@ -119,25 +126,94 @@ int main(/*int argc, char **argv*/)
 
                     if (!VUniversu(universum, wordCopy))
                     {
-                        Error("Word not in universe");
+                        Error("Value not in universe!");
                         printf("Line %i", lineIndex);
                         exit(0);
                     }
 
-                    mnoziny[pocetMnozin].index = lineIndex;
                     mnoziny[pocetMnozin].values[i - 1] = wordCopy;
 
                     if (i < MAX_PARAMETERS)
                         mnoziny[pocetMnozin].values[i] = NULL;
                 }
 
+                mnoziny[pocetMnozin].index = lineIndex;
+
                 pocetMnozin++;
 
                 break;
             case RELACE_CHAR:
+            {
+                if ((wordIndex - 1) % 2 != 0)
+                {
+                    Error("Relation must be in pairs!");
+                    printf("Line %i", lineIndex);
+                    exit(0);
+                }
 
-                break;
+                int pairIndex = 0;
+                for (int i = 1; i < wordIndex; i++)
+                {
+                    int skipedChars = 0;
+                    char *wordCopy = (char *)malloc(sizeof(char) * MAX_STRING_LENGTH);
+                    for (int j = 0; 1; j++)
+                    {
+                        if (words[i][j] == '(' || words[i][j] == ')')
+                        {
+                            skipedChars++;
+                            continue;
+                        }
+
+                        wordCopy[j - skipedChars] = words[i][j];
+
+                        if (words[i][j] == '\0')
+                            break;
+                    }
+
+                    if (!VUniversu(universum, wordCopy))
+                    {
+                        Error("Value not in universe!");
+                        printf("Line %i", lineIndex);
+                        exit(0);
+                    }
+
+                    relace[pocetRelaci].values[i - 1][pairIndex] = wordCopy;
+
+                    if (i < MAX_PARAMETERS)
+                        relace[pocetRelaci].values[i][pairIndex] = NULL;
+
+                    if (pairIndex == 0)
+                        pairIndex = 1;
+                    else
+                        pairIndex = 0;
+                }
+
+                relace[pocetRelaci].index = lineIndex;
+
+                pocetRelaci++;
+            }
+            break;
             case PRIKAZ_CHAR:
+                if (!strcmp(words[1], "empty"))
+                {
+                    if (wordIndex == 3)
+                    {
+                        printf("%s", mnEmpty(atoi(words[2])) ? "true" : "false");
+                        printf("\n");
+                    }
+                    else
+                    {
+                        Error("This command takes 1 argument");
+                        printf("Line %i\n", lineIndex);
+                        exit(0);
+                    }
+                }
+                else
+                {
+                    Error("Unknown command");
+                    printf("Line %i", lineIndex);
+                    exit(0);
+                }
 
                 break;
             default:
@@ -157,10 +233,18 @@ int main(/*int argc, char **argv*/)
             characterIndex++;
         }
     }
-    vypisUniversum(&universum);
+
+    /*vypisUniversum(&universum);
     vypisMnozinu(&mnoziny[0]);
     vypisMnozinu(&mnoziny[1]);
-    //printf("last value %s\n", universum.values[2]);
+    vypisRelace(&relace[0]);*/
+    //vypisRelace(&relace[0]);
+    //zopakovat pro každou hodnotu v množínách¨
+    for (int i = 1; i < pocetMnozin; i++)
+    {
+        free(mnoziny[i].values[0]);
+    }
+
     fclose(fp);
     printf("konec\n");
 
@@ -179,6 +263,27 @@ int main(/*int argc, char **argv*/)
     return 0;
 }
 
+//------------------------------------------------functions for mnoziny------------------------------------------------
+
+int mnEmpty(int line)
+{
+    for (int i = 0; i < pocetMnozin; i++)
+    {
+        if (mnoziny[i].index == line)
+        {
+            if (mnoziny[i].values[0] == NULL)
+                return 1;
+            else
+                return 0;
+        }
+    }
+    Error("There is no mnozina with this index");
+    printf("Passed index %i", line);
+    exit(0);
+    return 0;
+}
+
+//------------------------------------------------functions for relace-------------------------------------------------
 //printf("%c\n", testovaci.values[1]);
 /*char *p = &t[0];
     p++;
