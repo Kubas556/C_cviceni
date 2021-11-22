@@ -92,23 +92,16 @@ int main(int argc, char **argv)
                     char *wordCopy = (char *)malloc(sizeof(char) * MAX_STRING_LENGTH);
                     for (int j = 0; 1; j++)
                     {
-                        //char *charCopy = (char *)malloc(sizeof(char));
-
-                        //*charCopy = words[i][j];
-                        wordCopy[j] = /**charCopy*/ words[i][j];
+                        wordCopy[j] = words[i][j];
 
                         if (words[i][j] == '\0')
                             break;
                     }
-                    //char arr[20];
-                    //arr[0] = ' ';
-                    //printf("%s\n", wordCopy);
 
                     universum.values[i - 1] = wordCopy;
 
                     if (i < MAX_PARAMETERS)
                         universum.values[i] = NULL;
-                    //printf("%s\n", wordCopy);
                 }
 
                 break;
@@ -234,31 +227,34 @@ int main(int argc, char **argv)
         }
     }
 
+    //uncoment this if you want to write out, what is inside mnozina, relace and universum variables
     /*vypisUniversum(&universum);
     vypisMnozinu(&mnoziny[0]);
     vypisMnozinu(&mnoziny[1]);
     vypisRelace(&relace[0]);*/
-    //vypisRelace(&relace[0]);
-    //zopakovat pro každou hodnotu v množínách¨
-    for (int i = 1; i < pocetMnozin; i++)
+
+    //clean memory
+    //the way how values are stored is inefective. TODO: change mnoziny and values to use pointer from universum
+    for (int i = 1; i < MAX_PARAMETERS; i++)
     {
-        free(mnoziny[i].values[0]);
+        for (int j = 0; j < MAX_PARAMETERS; j++)
+            free(mnoziny[i].values[j]);
+    }
+
+    for (int i = 1; i < MAX_PARAMETERS; i++)
+    {
+        free(universum.values[i]);
+    }
+
+    for (int i = 1; i < MAX_PARAMETERS; i++)
+    {
+        for (int j = 0; j < MAX_PARAMETERS; j++)
+            for (int k = 0; k < 2; k++)
+                free(relace[i].values[j][k]);
     }
 
     fclose(fp);
     printf("konec\n");
-
-    //char t[] = {'t', 'e', 's', 't'};
-    /*MnozinaT testovaci;
-    testovaci.index = 1;
-    testovaci.values[3] = NULL;
-    testovaci.values[0] = "test";
-    testovaci.values[1] = "test2";
-    char f[50];
-    scanf("%s", &f[0]);
-    testovaci.values[2] = &f[0];
-
-    vypisMnozinu(&testovaci);*/
 
     return 0;
 }
@@ -284,7 +280,3 @@ int mnEmpty(int line)
 }
 
 //------------------------------------------------functions for relace-------------------------------------------------
-//printf("%c\n", testovaci.values[1]);
-/*char *p = &t[0];
-    p++;
-    printf("%c", *p);*/
